@@ -1,0 +1,56 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import RadiographyModal from "./RadiographyModal";
+import RadiographyList from "./RadiographyList";
+const Radiography = () => {
+  const [Radiographys, setRadiographys] = useState([]);
+  const { token, user } = useSelector((state) => state.auth);
+  const getRadiography = async () => {
+    try {
+      const data = await axios.get(
+        `http://localhost:8800/api/radiography/${user._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setRadiographys(data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getRadiography();
+  }, []);
+  return (
+    <div>
+      <div class="card">
+        <div class="card-header py-3">
+          <h6 class="mb-0">Ajouter examen radiologique</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12 col-lg-4 d-flex">
+              <div class="card border shadow-none w-100">
+                <div class="card-body">
+                  <RadiographyModal getRadiography={getRadiography} />
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-8 d-flex">
+              <div class="card border shadow-none w-100">
+                <div class="card-body">
+                  <RadiographyList Radiographys={Radiographys} getRadiography={getRadiography} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Radiography;
